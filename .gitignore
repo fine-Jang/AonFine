@@ -1,0 +1,14 @@
+target/
+bin/
+*.class
+
+*.log
+*.tmp
+
+.DS_Store
+Thumbs.db
+
+.settings/org.eclipse.wst.server.core.prefs
+.settings/org.eclipse.core.resources.prefs
+
+src/main/webapp/upload/
