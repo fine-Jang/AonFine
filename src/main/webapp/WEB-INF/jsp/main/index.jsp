@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
@@ -29,6 +29,7 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item active"><a class="nav-link" href="${pageContext.request.contextPath}/main.do">오늘 뭐먹지</a></li>
+              <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/lunch/today.do">오늘의 점심</a></li>
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/list.do">맛집 목록</a></li>
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/form.do">맛집 등록</a></li>
             </ul>
@@ -60,7 +61,29 @@
                     <h1>오늘 뭐먹지?</h1>
                     <p>회사 근처 맛집을 등록하고, 최신 점심 정보를 빠르게 확인하세요.</p>
                     <div class="btn-box">
-                      <a href="${pageContext.request.contextPath}/restaurant/form.do" class="btn1">맛집 등록</a>
+                      <a href="${pageContext.request.contextPath}/lunch/today.do" class="btn1">오늘 점심 투표</a>
+                    </div>
+                    <div class="mt-4">
+                      <c:choose>
+                        <c:when test="${not empty todayLunchTopList}">
+                          <h5 class="text-white">오늘 점심 Top 3</h5>
+                          <ol class="text-white pl-3">
+                            <c:forEach var="item" items="${todayLunchTopList}">
+                              <li><c:out value="${item.storeName}" /> · <c:out value="${item.voteCount}" />표</li>
+                            </c:forEach>
+                          </ol>
+                        </c:when>
+                        <c:otherwise>
+                          <p class="text-white">아직 오늘 점심 투표가 없습니다.</p>
+                        </c:otherwise>
+                      </c:choose>
+                      <c:if test="${not empty myLunchVote}">
+                        <p class="text-white">내 선택: <strong><c:out value="${myLunchVote.storeName}" /></strong></p>
+                        <form method="post" action="${pageContext.request.contextPath}/lunch/cancel.do" onsubmit="return confirm('오늘 점심 선택을 취소하시겠습니까?');">
+                          <input type="hidden" name="returnUrl" value="/main.do">
+                          <button type="submit" class="btn btn-sm btn-outline-light">선택 취소</button>
+                        </form>
+                      </c:if>
                     </div>
                   </div>
                 </div>

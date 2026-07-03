@@ -1,12 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>맛집 목록 - AonFine</title>
+  <title>오늘의 점심 - AonFine</title>
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/bootstrap.css" />
   <link href="${pageContext.request.contextPath}/css/font-awesome.min.css" rel="stylesheet" />
   <link href="${pageContext.request.contextPath}/css/style.css" rel="stylesheet" />
@@ -22,10 +21,21 @@
           <div class="collapse navbar-collapse show">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/main.do">오늘 뭐먹지</a></li>
-              <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/lunch/today.do">오늘의 점심</a></li>
-              <li class="nav-item active"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/list.do">맛집 목록</a></li>
+              <li class="nav-item active"><a class="nav-link" href="${pageContext.request.contextPath}/lunch/today.do">오늘의 점심</a></li>
+              <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/list.do">맛집 목록</a></li>
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/form.do">맛집 등록</a></li>
             </ul>
+            <div class="user_option">
+              <c:choose>
+                <c:when test="${not empty sessionScope.loginUser}">
+                  <span class="text-white mr-3"><c:out value="${sessionScope.loginUser.userName}" />님</span>
+                  <a href="${pageContext.request.contextPath}/logout.do" class="order_online">로그아웃</a>
+                </c:when>
+                <c:otherwise>
+                  <a href="${pageContext.request.contextPath}/login.do" class="order_online">로그인</a>
+                </c:otherwise>
+              </c:choose>
+            </div>
           </div>
         </nav>
       </div>
@@ -35,39 +45,41 @@
   <section class="food_section layout_padding">
     <div class="container">
       <div class="heading_container heading_center">
-        <h2>맛집 목록</h2>
+        <h2>오늘의 점심 투표</h2>
       </div>
-      <c:if test="${not empty myLunchVote}">
-        <div class="alert alert-warning d-flex justify-content-between align-items-center">
-          <span>오늘 선택: <strong><c:out value="${myLunchVote.storeName}" /></strong></span>
-          <form method="post" action="${pageContext.request.contextPath}/lunch/cancel.do" class="mb-0" onsubmit="return confirm('오늘 점심 선택을 취소하시겠습니까?');">
-            <input type="hidden" name="returnUrl" value="/restaurant/list.do">
-            <button type="submit" class="btn btn-sm btn-outline-secondary">선택 취소</button>
-          </form>
-        </div>
-      </c:if>
       <c:if test="${not empty message}">
         <div class="alert alert-info"><c:out value="${message}" /></div>
       </c:if>
-      <form class="row mb-4" action="${pageContext.request.contextPath}/restaurant/list.do" method="get">
-        <div class="col-md-10">
-          <input type="text" name="searchKeyword" class="form-control" value="${fn:escapeXml(searchVO.searchKeyword)}" placeholder="맛집명, 상호명, 메뉴 검색">
-        </div>
-        <div class="col-md-2">
-          <button type="submit" class="btn btn-warning btn-block">검색</button>
-        </div>
-      </form>
+      <c:choose>
+        <c:when test="${not empty myLunchVote}">
+          <div class="alert alert-warning d-flex justify-content-between align-items-center">
+            <span>오늘 선택: <strong><c:out value="${myLunchVote.storeName}" /></strong></span>
+            <form method="post" action="${pageContext.request.contextPath}/lunch/cancel.do" class="mb-0" onsubmit="return confirm('오늘 점심 선택을 취소하시겠습니까?');">
+              <input type="hidden" name="returnUrl" value="/lunch/today.do">
+              <button type="submit" class="btn btn-sm btn-outline-secondary">선택 취소</button>
+            </form>
+          </div>
+        </c:when>
+        <c:when test="${not empty sessionScope.loginUser}">
+          <div class="text-center mb-4">
+            <a href="${pageContext.request.contextPath}/lunch/random.do" class="btn btn-warning">랜덤 선택</a>
+          </div>
+        </c:when>
+        <c:otherwise>
+          <div class="alert alert-light border text-center">투표와 랜덤 선택은 로그인 후 가능합니다.</div>
+        </c:otherwise>
+      </c:choose>
 
       <div class="filters-content">
         <div class="row grid">
-          <c:forEach var="restaurant" items="${restaurantList}">
+          <c:forEach var="item" items="${todayVoteList}">
             <div class="col-sm-6 col-lg-4 all">
               <div class="box">
                 <div>
                   <div class="img-box">
                     <c:choose>
-                      <c:when test="${not empty restaurant.imagePath}">
-                        <img src="${pageContext.request.contextPath}${restaurant.imagePath}" alt="">
+                      <c:when test="${not empty item.imagePath}">
+                        <img src="${pageContext.request.contextPath}${item.imagePath}" alt="">
                       </c:when>
                       <c:otherwise>
                         <img src="${pageContext.request.contextPath}/images/f1.png" alt="">
@@ -75,16 +87,16 @@
                     </c:choose>
                   </div>
                   <div class="detail-box">
-                    <h5><c:out value="${restaurant.restaurantName}" /></h5>
-                    <p><c:out value="${restaurant.address}" /></p>
+                    <h5><c:out value="${item.storeName}" /></h5>
+                    <p><c:out value="${item.menuName}" /> · <c:out value="${item.address}" /></p>
                     <div class="options">
-                      <h6><c:out value="${restaurant.menuName}" /></h6>
-                      <a href="${pageContext.request.contextPath}/restaurant/detail.do?restaurantId=${restaurant.restaurantId}">상세</a>
+                      <h6><c:out value="${item.voteCount}" />표</h6>
+                      <a href="${pageContext.request.contextPath}/restaurant/detail.do?restaurantId=${item.restaurantId}">상세</a>
                     </div>
                     <c:if test="${not empty sessionScope.loginUser and empty myLunchVote}">
                       <form method="post" action="${pageContext.request.contextPath}/lunch/vote.do" class="mt-3">
-                        <input type="hidden" name="restaurantId" value="${restaurant.restaurantId}">
-                        <input type="hidden" name="returnUrl" value="/restaurant/list.do">
+                        <input type="hidden" name="restaurantId" value="${item.restaurantId}">
+                        <input type="hidden" name="returnUrl" value="/lunch/today.do">
                         <button type="submit" class="btn btn-warning btn-block">오늘 점심 투표</button>
                       </form>
                     </c:if>
@@ -95,20 +107,9 @@
           </c:forEach>
         </div>
       </div>
-
-      <c:if test="${empty restaurantList}">
-        <p class="text-center">등록된 맛집이 없습니다.</p>
+      <c:if test="${empty todayVoteList}">
+        <p class="text-center">투표할 맛집이 없습니다.</p>
       </c:if>
-
-      <nav class="mt-4">
-        <ul class="pagination justify-content-center">
-          <c:forEach var="pageNo" begin="${paginationInfo.firstPageNoOnPageList}" end="${paginationInfo.lastPageNoOnPageList}">
-            <li class="page-item <c:if test='${pageNo eq paginationInfo.currentPageNo}'>active</c:if>">
-              <a class="page-link" href="${pageContext.request.contextPath}/restaurant/list.do?pageIndex=${pageNo}&searchKeyword=${searchVO.searchKeyword}">${pageNo}</a>
-            </li>
-          </c:forEach>
-        </ul>
-      </nav>
     </div>
   </section>
 
