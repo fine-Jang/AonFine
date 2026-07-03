@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
@@ -56,7 +56,7 @@
               <input type="hidden" id="longitude" name="longitude" value="${restaurant.longitude}">
               <input type="hidden" name="categoryCode" value="UNCATEGORIZED">
               <div>
-                <input type="text" name="restaurantName" class="form-control" placeholder="추천인" value="${fn:escapeXml(restaurant.restaurantName)}" required>
+                <input type="text" name="restaurantName" class="form-control" placeholder="추천인" value="${fn:escapeXml(restaurant.restaurantName)}" readonly required>
               </div>
               <div class="input-group">
                 <input type="text" id="storeName" name="storeName" class="form-control" placeholder="상호명 검색" value="${fn:escapeXml(restaurant.storeName)}" required>
@@ -269,3 +269,4 @@
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4Wsoqr2o4o-kSMNrr9kDq62DmsQ7Dg4&libraries=places&callback=initRestaurantMap"></script>
 </body>
 </html>
+

@@ -1,5 +1,6 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -31,6 +32,18 @@
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/list.do">맛집 목록</a></li>
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/form.do">맛집 등록</a></li>
             </ul>
+            <div class="user_option">
+              <c:choose>
+                <c:when test="${not empty sessionScope.loginUser}">
+                  <span class="text-white mr-3"><c:out value="${sessionScope.loginUser.userName}" />님</span>
+                  <a href="${pageContext.request.contextPath}/logout.do" class="order_online">로그아웃</a>
+                </c:when>
+                <c:otherwise>
+                  <a href="${pageContext.request.contextPath}/login.do" class="order_online">로그인</a>
+                  <a href="${pageContext.request.contextPath}/join.do" class="order_online ml-2">회원가입</a>
+                </c:otherwise>
+              </c:choose>
+            </div>
           </div>
         </nav>
       </div>
@@ -45,7 +58,7 @@
                 <div class="col-md-7 col-lg-6">
                   <div class="detail-box">
                     <h1>오늘 뭐먹지?</h1>
-                    <p>회사 근처 맛집을 등록하고, 최신 점심 후보를 빠르게 확인하세요.</p>
+                    <p>회사 근처 맛집을 등록하고, 최신 점심 정보를 빠르게 확인하세요.</p>
                     <div class="btn-box">
                       <a href="${pageContext.request.contextPath}/restaurant/form.do" class="btn1">맛집 등록</a>
                     </div>
@@ -81,13 +94,11 @@
                     </c:choose>
                   </div>
                   <div class="detail-box">
-                    <h5><c:out value="${restaurant.restaurantName}" /></h5>
-                    <p><c:out value="${restaurant.storeName}" /> · <c:out value="${restaurant.menuName}" /></p>
+                    <h5><c:out value="${restaurant.storeName}" /></h5>
+                    <p><c:out value="${restaurant.restaurantName}" /> 추천 · <c:out value="${restaurant.menuName}" /></p>
                     <div class="options">
                       <h6>NEW</h6>
-                      <a href="${pageContext.request.contextPath}/restaurant/detail.do?restaurantId=${restaurant.restaurantId}">
-                        상세
-                      </a>
+                      <a href="${pageContext.request.contextPath}/restaurant/detail.do?restaurantId=${restaurant.restaurantId}">상세</a>
                     </div>
                   </div>
                 </div>

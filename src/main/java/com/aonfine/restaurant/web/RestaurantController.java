@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.aonfine.auth.service.UserVO;
+import com.aonfine.auth.web.AuthController;
 import com.aonfine.restaurant.service.RestaurantSearchVO;
 import com.aonfine.restaurant.service.RestaurantService;
 import com.aonfine.restaurant.service.RestaurantVO;
@@ -59,14 +62,23 @@ public class RestaurantController {
     }
 
     @RequestMapping("/restaurant/form.do")
-    public String form(Model model) {
-        model.addAttribute("restaurant", new RestaurantVO());
+    public String form(HttpSession session, Model model) {
+        UserVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/login.do?returnUrl=/restaurant/form.do";
+        }
+        RestaurantVO restaurant = new RestaurantVO();
+        restaurant.setRestaurantName(loginUser.getUserName());
+        model.addAttribute("restaurant", restaurant);
         model.addAttribute("mode", "insert");
         return "restaurant/form";
     }
 
     @RequestMapping("/restaurant/edit.do")
-    public String edit(@RequestParam("restaurantId") Integer restaurantId, Model model) {
+    public String edit(@RequestParam("restaurantId") Integer restaurantId, HttpSession session, Model model) {
+        if (getLoginUser(session) == null) {
+            return "redirect:/login.do?returnUrl=/restaurant/edit.do?restaurantId=" + restaurantId;
+        }
         model.addAttribute("restaurant", restaurantService.selectRestaurant(restaurantId));
         model.addAttribute("mode", "update");
         return "restaurant/form";
@@ -77,6 +89,12 @@ public class RestaurantController {
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             HttpServletRequest request,
             RedirectAttributes redirectAttributes) throws IOException {
+        UserVO loginUser = getLoginUser(request.getSession(false));
+        if (loginUser == null) {
+            return "redirect:/login.do?returnUrl=/restaurant/form.do";
+        }
+        restaurantVO.setRestaurantName(loginUser.getUserName());
+        restaurantVO.setCategoryCode("UNCATEGORIZED");
         applyUploadFile(restaurantVO, imageFile, request.getServletContext());
         restaurantService.insertRestaurant(restaurantVO);
         redirectAttributes.addFlashAttribute("message", "맛집이 등록되었습니다.");
@@ -88,6 +106,12 @@ public class RestaurantController {
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             HttpServletRequest request,
             RedirectAttributes redirectAttributes) throws IOException {
+        UserVO loginUser = getLoginUser(request.getSession(false));
+        if (loginUser == null) {
+            return "redirect:/login.do?returnUrl=/restaurant/edit.do?restaurantId=" + restaurantVO.getRestaurantId();
+        }
+        restaurantVO.setRestaurantName(loginUser.getUserName());
+        restaurantVO.setCategoryCode("UNCATEGORIZED");
         applyUploadFile(restaurantVO, imageFile, request.getServletContext());
         restaurantService.updateRestaurant(restaurantVO);
         redirectAttributes.addFlashAttribute("message", "맛집 정보가 수정되었습니다.");
@@ -96,10 +120,22 @@ public class RestaurantController {
 
     @RequestMapping("/restaurant/delete.do")
     public String delete(@RequestParam("restaurantId") Integer restaurantId,
+            HttpSession session,
             RedirectAttributes redirectAttributes) {
+        if (getLoginUser(session) == null) {
+            return "redirect:/login.do?returnUrl=/restaurant/detail.do?restaurantId=" + restaurantId;
+        }
         restaurantService.deleteRestaurant(restaurantId);
         redirectAttributes.addFlashAttribute("message", "맛집 정보가 삭제되었습니다.");
         return "redirect:/restaurant/list.do";
+    }
+
+    private UserVO getLoginUser(HttpSession session) {
+        if (session == null) {
+            return null;
+        }
+        Object loginUser = session.getAttribute(AuthController.LOGIN_SESSION_KEY);
+        return loginUser instanceof UserVO ? (UserVO) loginUser : null;
     }
 
     private void applyUploadFile(RestaurantVO restaurantVO, MultipartFile imageFile, ServletContext servletContext)
