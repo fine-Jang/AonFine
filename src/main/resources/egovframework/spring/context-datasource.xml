@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${Globals.DriverClassName}" />
+        <property name="url" value="${Globals.Url}" />
+        <property name="username" value="${Globals.UserName}" />
+        <property name="password" value="${Globals.Password}" />
+        <property name="initialSize" value="1" />
+        <property name="maxTotal" value="5" />
+        <property name="maxIdle" value="3" />
+        <property name="validationQuery" value="select 1" />
+        <property name="testOnBorrow" value="true" />
+    </bean>
+</beans>
