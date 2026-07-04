@@ -5,7 +5,7 @@
 	<groupId>com.aonfine</groupId>
 	<artifactId>AonFine</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.0</version>
+	<version>2.2.0</version>
 	<name>AonFine</name>
 	<url>http://www.egovframe.go.kr</url>
 

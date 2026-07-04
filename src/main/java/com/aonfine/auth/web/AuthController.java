@@ -4,6 +4,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -17,6 +19,8 @@ import com.aonfine.auth.service.UserVO;
 
 @Controller
 public class AuthController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
     public static final String LOGIN_SESSION_KEY = "loginUser";
 
@@ -35,6 +39,7 @@ public class AuthController {
             @RequestParam(value = "returnUrl", required = false) String returnUrl,
             HttpServletRequest request,
             Model model) {
+        LOGGER.info("Login request userId={}", userId);
         UserVO loginUser = userService.login(userId, password);
         if (loginUser == null) {
             model.addAttribute("message", "아이디 또는 패스워드가 올바르지 않습니다.");
@@ -44,6 +49,7 @@ public class AuthController {
         }
 
         request.getSession(true).setAttribute(LOGIN_SESSION_KEY, loginUser);
+        LOGGER.info("Login success userId={}", loginUser.getUserId());
         if (isSafeReturnUrl(returnUrl)) {
             return "redirect:" + returnUrl;
         }
@@ -66,6 +72,7 @@ public class AuthController {
             model.addAttribute("message", e.getMessage());
             return "auth/join";
         }
+        LOGGER.info("Join success userId={}", userVO.getUserId());
         redirectAttributes.addFlashAttribute("message", "회원가입이 완료되었습니다. 로그인해 주세요.");
         return "redirect:/login.do";
     }
@@ -73,6 +80,7 @@ public class AuthController {
     @RequestMapping("/logout.do")
     public String logout(HttpSession session) {
         if (session != null) {
+            LOGGER.info("Logout request");
             session.invalidate();
         }
         return "redirect:/main.do";

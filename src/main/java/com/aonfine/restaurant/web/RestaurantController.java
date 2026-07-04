@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -29,6 +31,8 @@ import com.aonfine.restaurant.service.RestaurantVO;
 
 @Controller
 public class RestaurantController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestaurantController.class);
 
     @Resource(name = "restaurantService")
     private RestaurantService restaurantService;
@@ -61,6 +65,7 @@ public class RestaurantController {
         searchVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
 
         int totalCount = restaurantService.selectRestaurantListTotCnt(searchVO);
+        LOGGER.info("Restaurant list request pageIndex={}, keyword={}, totalCount={}", searchVO.getPageIndex(), searchVO.getSearchKeyword(), totalCount);
         paginationInfo.setTotalRecordCount(totalCount);
 
         model.addAttribute("restaurantList", restaurantService.selectRestaurantList(searchVO));
@@ -70,6 +75,7 @@ public class RestaurantController {
 
     @RequestMapping("/restaurant/detail.do")
     public String detail(@RequestParam("restaurantId") Integer restaurantId, Model model) {
+        LOGGER.info("Restaurant detail request restaurantId={}", restaurantId);
         model.addAttribute("restaurant", restaurantService.selectRestaurant(restaurantId));
         model.addAttribute("commentList", restaurantCommentService.selectCommentList(restaurantId));
         return "restaurant/detail";
@@ -93,6 +99,7 @@ public class RestaurantController {
         if (getLoginUser(session) == null) {
             return "redirect:/login.do?returnUrl=/restaurant/edit.do?restaurantId=" + restaurantId;
         }
+        LOGGER.info("Restaurant detail request restaurantId={}", restaurantId);
         model.addAttribute("restaurant", restaurantService.selectRestaurant(restaurantId));
         model.addAttribute("mode", "update");
         return "restaurant/form";
@@ -111,6 +118,7 @@ public class RestaurantController {
         restaurantVO.setCategoryCode("UNCATEGORIZED");
         applyUploadFile(restaurantVO, imageFile, request.getServletContext());
         restaurantService.insertRestaurant(restaurantVO);
+        LOGGER.info("Restaurant inserted userId={}, storeName={}, menuName={}", loginUser.getUserId(), restaurantVO.getStoreName(), restaurantVO.getMenuName());
         redirectAttributes.addFlashAttribute("message", "맛집이 등록되었습니다.");
         return "redirect:/restaurant/list.do";
     }
@@ -128,6 +136,7 @@ public class RestaurantController {
         restaurantVO.setCategoryCode("UNCATEGORIZED");
         applyUploadFile(restaurantVO, imageFile, request.getServletContext());
         restaurantService.updateRestaurant(restaurantVO);
+        LOGGER.info("Restaurant updated userId={}, restaurantId={}, storeName={}", loginUser.getUserId(), restaurantVO.getRestaurantId(), restaurantVO.getStoreName());
         redirectAttributes.addFlashAttribute("message", "맛집 정보가 수정되었습니다.");
         return "redirect:/restaurant/detail.do?restaurantId=" + restaurantVO.getRestaurantId();
     }
@@ -140,6 +149,7 @@ public class RestaurantController {
             return "redirect:/login.do?returnUrl=/restaurant/detail.do?restaurantId=" + restaurantId;
         }
         restaurantService.deleteRestaurant(restaurantId);
+        LOGGER.info("Restaurant deleted restaurantId={}", restaurantId);
         redirectAttributes.addFlashAttribute("message", "맛집 정보가 삭제되었습니다.");
         return "redirect:/restaurant/list.do";
     }

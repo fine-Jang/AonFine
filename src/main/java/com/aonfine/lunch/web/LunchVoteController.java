@@ -3,6 +3,8 @@ package com.aonfine.lunch.web;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,8 @@ import com.aonfine.lunch.service.LunchVoteVO;
 
 @Controller
 public class LunchVoteController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LunchVoteController.class);
 
     @Resource(name = "lunchVoteService")
     private LunchVoteService lunchVoteService;
@@ -41,6 +45,7 @@ public class LunchVoteController {
         }
         try {
             LunchVoteVO selected = lunchVoteService.vote(restaurantId, loginUser);
+            LOGGER.info("Lunch vote success userId={}, restaurantId={}, storeName={}", loginUser.getUserId(), restaurantId, selected.getStoreName());
             redirectAttributes.addFlashAttribute("message", selected.getStoreName() + "에 투표했습니다.");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -56,6 +61,7 @@ public class LunchVoteController {
         }
         try {
             LunchVoteVO selected = lunchVoteService.randomVote(loginUser);
+            LOGGER.info("Lunch random vote success userId={}, restaurantId={}, storeName={}", loginUser.getUserId(), selected.getRestaurantId(), selected.getStoreName());
             redirectAttributes.addFlashAttribute("message", "랜덤 선택 결과: " + selected.getStoreName() + "에 투표했습니다.");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -72,6 +78,7 @@ public class LunchVoteController {
         }
         try {
             lunchVoteService.cancelTodayVote(loginUser);
+            LOGGER.info("Lunch vote canceled userId={}", loginUser.getUserId());
             redirectAttributes.addFlashAttribute("message", "오늘 점심 선택을 취소했습니다. 다시 투표할 수 있습니다.");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
