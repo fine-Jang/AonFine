@@ -2,7 +2,10 @@
 function getYear() {
     var currentDate = new Date();
     var currentYear = currentDate.getFullYear();
-    document.querySelector("#displayYear").innerHTML = currentYear;
+    var displayYear = document.querySelector("#displayYear");
+    if (displayYear) {
+        displayYear.innerHTML = currentYear;
+    }
 }
 
 getYear();
@@ -10,28 +13,55 @@ getYear();
 
 // isotope js
 $(window).on('load', function () {
+    var $grid = $(".grid");
+    var hasIsotope = $.fn.isotope && $grid.length > 0;
+
+    if (hasIsotope) {
+        $grid.isotope({
+            itemSelector: ".all",
+            percentPosition: false,
+            masonry: {
+                columnWidth: ".all"
+            }
+        });
+    }
+
     $('.filters_menu li').click(function () {
         $('.filters_menu li').removeClass('active');
         $(this).addClass('active');
 
         var data = $(this).attr('data-filter');
-        $grid.isotope({
-            filter: data
-        })
+        if (hasIsotope) {
+            $grid.isotope({ filter: data });
+        } else {
+            if (data === '*') {
+                $grid.find('.all').show();
+            } else {
+                $grid.find('.all').hide();
+                $grid.find(data).show();
+            }
+        }
     });
 
-    var $grid = $(".grid").isotope({
-        itemSelector: ".all",
-        percentPosition: false,
-        masonry: {
-            columnWidth: ".all"
-        }
-    })
+    var categoryMenu = document.getElementById('todayMenuCategories');
+    var prevButton = document.getElementById('categoryPrev');
+    var nextButton = document.getElementById('categoryNext');
+    if (categoryMenu && prevButton && nextButton) {
+        var scrollStep = 102;
+        prevButton.addEventListener('click', function () {
+            categoryMenu.scrollLeft -= scrollStep;
+        });
+        nextButton.addEventListener('click', function () {
+            categoryMenu.scrollLeft += scrollStep;
+        });
+    }
 });
 
 // nice select
 $(document).ready(function() {
-    $('select').niceSelect();
+    if ($.fn.niceSelect) {
+        $('select').niceSelect();
+    }
   });
 
 /** google_map js **/
@@ -44,6 +74,7 @@ function myMap() {
 }
 
 // client section owl carousel
+if ($.fn.owlCarousel && $(".client_owl-carousel").length > 0) {
 $(".client_owl-carousel").owlCarousel({
     loop: true,
     margin: 0,
@@ -68,3 +99,4 @@ $(".client_owl-carousel").owlCarousel({
         }
     }
 });
+}

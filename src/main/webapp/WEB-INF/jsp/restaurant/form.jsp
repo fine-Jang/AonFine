@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
@@ -54,7 +54,17 @@
               <input type="hidden" name="restaurantId" value="${restaurant.restaurantId}">
               <input type="hidden" id="latitude" name="latitude" value="${restaurant.latitude}">
               <input type="hidden" id="longitude" name="longitude" value="${restaurant.longitude}">
-              <input type="hidden" name="categoryCode" value="UNCATEGORIZED">
+                            <div>
+                <select name="categoryCode" class="form-control" required>
+                  <option value="KOREAN" ${restaurant.categoryCode eq 'KOREAN' ? 'selected="selected"' : ''}>한식</option>
+                  <option value="CHINESE" ${restaurant.categoryCode eq 'CHINESE' ? 'selected="selected"' : ''}>중식</option>
+                  <option value="JAPANESE" ${restaurant.categoryCode eq 'JAPANESE' ? 'selected="selected"' : ''}>일식</option>
+                  <option value="WESTERN" ${restaurant.categoryCode eq 'WESTERN' ? 'selected="selected"' : ''}>양식</option>
+                  <option value="SNACK" ${restaurant.categoryCode eq 'SNACK' ? 'selected="selected"' : ''}>분식</option>
+                  <option value="CAFE" ${restaurant.categoryCode eq 'CAFE' ? 'selected="selected"' : ''}>카페</option>
+                  <option value="ETC" ${empty restaurant.categoryCode or restaurant.categoryCode eq 'UNCATEGORIZED' or restaurant.categoryCode eq 'ETC' ? 'selected="selected"' : ''}>기타</option>
+                </select>
+              </div>
               <div>
                 <input type="text" name="restaurantName" class="form-control" placeholder="추천인" value="${fn:escapeXml(restaurant.restaurantName)}" readonly required>
               </div>

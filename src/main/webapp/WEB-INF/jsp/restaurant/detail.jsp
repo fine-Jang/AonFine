@@ -70,6 +70,7 @@
               </div>
               <p><strong>추천인</strong> <c:out value="${restaurant.restaurantName}" /></p>
               <p><strong>메뉴</strong> <c:out value="${restaurant.menuName}" /></p>
+              <p><span class="badge badge-warning"><c:out value="${restaurant.categoryName}" /></span></p>
               <p><strong>주소</strong> <c:out value="${restaurant.address}" /></p>
               <p><c:out value="${restaurant.description}" /></p>
               <a href="${pageContext.request.contextPath}/restaurant/list.do">목록</a>

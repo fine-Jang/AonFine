@@ -27,7 +27,7 @@ public class UserJdbcMapper implements UserMapper {
 
     public UserVO selectUser(String userId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT USER_ID, PASSWORD_HASH, USER_NM, PHONE_NO, ");
+        sql.append("SELECT USER_ID, PASSWORD_HASH, USER_NM, PHONE_NO, ROLE_CD, ");
         sql.append("TO_CHAR(REG_DT, 'YYYY-MM-DD HH24:MI:SS') AS REG_DT ");
         sql.append("FROM TB_USER WHERE USER_ID = ?");
         List<UserVO> list = jdbcTemplate.query(sql.toString(), new Object[] { userId }, new UserRowMapper());
@@ -57,6 +57,7 @@ public class UserJdbcMapper implements UserMapper {
             vo.setPasswordHash(rs.getString("PASSWORD_HASH"));
             vo.setUserName(rs.getString("USER_NM"));
             vo.setPhoneNo(rs.getString("PHONE_NO"));
+            vo.setRoleCode(rs.getString("ROLE_CD"));
             vo.setRegDt(rs.getString("REG_DT"));
             return vo;
         }

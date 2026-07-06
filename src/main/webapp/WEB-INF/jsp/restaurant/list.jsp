@@ -22,6 +22,7 @@
           <div class="collapse navbar-collapse show">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/main.do">오늘 뭐먹지</a></li>
+              <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/notice/list.do">공지사항</a></li>
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/lunch/today.do">오늘의 점심</a></li>
               <li class="nav-item active"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/list.do">맛집 목록</a></li>
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/form.do">맛집 등록</a></li>
@@ -76,6 +77,7 @@
                   </div>
                   <div class="detail-box">
                     <h5><c:out value="${restaurant.restaurantName}" /></h5>
+                    <span class="badge badge-warning mb-2"><c:out value="${restaurant.categoryName}" /></span>
                     <p><c:out value="${restaurant.address}" /></p>
                     <div class="options">
                       <h6><c:out value="${restaurant.menuName}" /></h6>

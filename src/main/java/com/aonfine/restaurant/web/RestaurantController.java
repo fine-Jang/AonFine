@@ -115,7 +115,7 @@ public class RestaurantController {
             return "redirect:/login.do?returnUrl=/restaurant/form.do";
         }
         restaurantVO.setRestaurantName(loginUser.getUserName());
-        restaurantVO.setCategoryCode("UNCATEGORIZED");
+        applyDefaultCategory(restaurantVO);
         applyUploadFile(restaurantVO, imageFile, request.getServletContext());
         restaurantService.insertRestaurant(restaurantVO);
         LOGGER.info("Restaurant inserted userId={}, storeName={}, menuName={}", loginUser.getUserId(), restaurantVO.getStoreName(), restaurantVO.getMenuName());
@@ -133,7 +133,7 @@ public class RestaurantController {
             return "redirect:/login.do?returnUrl=/restaurant/edit.do?restaurantId=" + restaurantVO.getRestaurantId();
         }
         restaurantVO.setRestaurantName(loginUser.getUserName());
-        restaurantVO.setCategoryCode("UNCATEGORIZED");
+        applyDefaultCategory(restaurantVO);
         applyUploadFile(restaurantVO, imageFile, request.getServletContext());
         restaurantService.updateRestaurant(restaurantVO);
         LOGGER.info("Restaurant updated userId={}, restaurantId={}, storeName={}", loginUser.getUserId(), restaurantVO.getRestaurantId(), restaurantVO.getStoreName());
@@ -160,6 +160,12 @@ public class RestaurantController {
         }
         Object loginUser = session.getAttribute(AuthController.LOGIN_SESSION_KEY);
         return loginUser instanceof UserVO ? (UserVO) loginUser : null;
+    }
+
+    private void applyDefaultCategory(RestaurantVO restaurantVO) {
+        if (!StringUtils.hasText(restaurantVO.getCategoryCode()) || "UNCATEGORIZED".equals(restaurantVO.getCategoryCode())) {
+            restaurantVO.setCategoryCode("ETC");
+        }
     }
 
     private void applyUploadFile(RestaurantVO restaurantVO, MultipartFile imageFile, ServletContext servletContext)

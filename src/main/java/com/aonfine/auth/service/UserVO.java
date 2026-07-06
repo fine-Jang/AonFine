@@ -10,6 +10,7 @@ public class UserVO implements Serializable {
     private String passwordHash;
     private String userName;
     private String phoneNo;
+    private String roleCode;
     private String regDt;
 
     public String getUserId() {
@@ -50,6 +51,18 @@ public class UserVO implements Serializable {
 
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
+    }
+
+    public String getRoleCode() {
+        return roleCode;
+    }
+
+    public void setRoleCode(String roleCode) {
+        this.roleCode = roleCode;
+    }
+
+    public boolean isAdmin() {
+        return "ADMIN".equals(roleCode);
     }
 
     public String getRegDt() {

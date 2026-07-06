@@ -73,6 +73,28 @@ public class RestaurantVO {
         this.categoryCode = categoryCode;
     }
 
+    public String getCategoryName() {
+        if ("KOREAN".equals(categoryCode)) {
+            return "\uD55C\uC2DD";
+        }
+        if ("CHINESE".equals(categoryCode)) {
+            return "\uC911\uC2DD";
+        }
+        if ("JAPANESE".equals(categoryCode)) {
+            return "\uC77C\uC2DD";
+        }
+        if ("WESTERN".equals(categoryCode)) {
+            return "\uC591\uC2DD";
+        }
+        if ("SNACK".equals(categoryCode)) {
+            return "\uBD84\uC2DD";
+        }
+        if ("CAFE".equals(categoryCode)) {
+            return "\uCE74\uD398";
+        }
+        return "\uAE30\uD0C0";
+    }
+
     public String getAddress() {
         return address;
     }

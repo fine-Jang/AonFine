@@ -29,6 +29,7 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item active"><a class="nav-link" href="${pageContext.request.contextPath}/main.do">오늘 뭐먹지</a></li>
+              <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/notice/list.do">공지사항</a></li>
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/lunch/today.do">오늘의 점심</a></li>
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/list.do">맛집 목록</a></li>
               <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/restaurant/form.do">맛집 등록</a></li>
@@ -98,12 +99,32 @@
   <section class="food_section layout_padding-bottom">
     <div class="container">
       <div class="heading_container heading_center">
-        <h2>최신 맛집</h2>
+        <h2>Today's Menu</h2>
+      </div>
+      <div class="aon-category-wrap">
+        <button type="button" class="aon-category-nav" id="categoryPrev" aria-label="&#51060;&#51204; &#52852;&#53580;&#44256;&#47532;">
+          <i class="fa fa-angle-left" aria-hidden="true"></i>
+        </button>
+        <ul class="filters_menu aon-category-menu" id="todayMenuCategories">
+          <li class="active" data-filter="*">ALL</li>
+          <li data-filter=".cat-korean">&#54620;&#49885;</li>
+          <li data-filter=".cat-chinese">&#51473;&#49885;</li>
+          <li data-filter=".cat-japanese">&#51068;&#49885;</li>
+          <li data-filter=".cat-western">&#50577;&#49885;</li>
+          <li data-filter=".cat-snack">&#48516;&#49885;</li>
+          <li data-filter=".cat-cafe">&#52852;&#54168;</li>
+          <li data-filter=".cat-etc">&#44592;&#53440;</li>
+        </ul>
+        <button type="button" class="aon-category-nav" id="categoryNext" aria-label="&#45796;&#51020; &#52852;&#53580;&#44256;&#47532;">
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </button>
       </div>
       <div class="filters-content">
         <div class="row grid">
-          <c:forEach var="restaurant" items="${latestRestaurants}">
-            <div class="col-sm-6 col-lg-4 all">
+                    <c:forEach var="restaurant" items="${latestRestaurants}">
+            <c:set var="categoryCode" value="${empty restaurant.categoryCode or restaurant.categoryCode eq 'UNCATEGORIZED' ? 'ETC' : restaurant.categoryCode}" />
+            <c:set var="categoryClass" value="${fn:toLowerCase(categoryCode)}" />
+            <div class="col-sm-6 col-lg-4 all cat-${categoryClass}">
               <div class="box">
                 <div>
                   <div class="img-box">
@@ -118,6 +139,7 @@
                   </div>
                   <div class="detail-box">
                     <h5><c:out value="${restaurant.storeName}" /></h5>
+                    <span class="badge badge-warning mb-2"><c:out value="${restaurant.categoryName}" /></span>
                     <p><c:out value="${restaurant.restaurantName}" /> 추천 · <c:out value="${restaurant.menuName}" /></p>
                     <div class="options">
                       <h6>NEW</h6>
