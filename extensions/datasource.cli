@@ -1,0 +1,7 @@
+embed-server --std-out=echo --server-config=standalone-openshift.xml
+
+/subsystem=datasources/jdbc-driver=cubrid:add(driver-name=cubrid,driver-module-name=com.cubrid,driver-class-name=cubrid.jdbc.driver.CUBRIDDriver)
+data-source add --name=AonFineDS --jndi-name=java:jboss/datasources/AonFineDS --driver-name=cubrid --connection-url=${env.DB_URL} --user-name=${env.DB_USERNAME} --password=${env.DB_PASSWORD} --min-pool-size=2 --max-pool-size=20 --validate-on-match=true --background-validation=false
+/subsystem=datasources/data-source=AonFineDS:test-connection-in-pool
+
+stop-embedded-server

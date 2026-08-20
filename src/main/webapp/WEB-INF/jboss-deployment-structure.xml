@@ -3,6 +3,7 @@
     <deployment>
         <exclude-subsystems>
             <subsystem name="jsf" />
+            <subsystem name="weld" />
         </exclude-subsystems>
         <exclusions>
             <module name="javax.faces.api" />

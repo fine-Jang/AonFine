@@ -1,0 +1,2 @@
+CUSTOM_INSTALL_DIRECTORIES=extensions
+MAVEN_ARGS_APPEND=-DskipTests -Dcom.redhat.xpaas.repo.jbossorg

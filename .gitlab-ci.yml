@@ -1,0 +1,90 @@
+stages:
+  - verify
+  - package
+  - image
+  - deploy
+
+default:
+  tags:
+    - aonfine
+    - jdk8
+    - maven
+    - ocp
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dfile.encoding=UTF-8"
+  KUBECONFIG: "$CI_PROJECT_DIR/.kube/config"
+  GIT_DEPTH: "0"
+
+cache:
+  key: "maven-$CI_PROJECT_ID"
+  paths:
+    - .m2/repository/
+
+verify:
+  stage: verify
+  script:
+    - java -version
+    - mvn -B -ntp -DskipTests=false test
+
+package_war:
+  stage: package
+  script:
+    - mvn -B -ntp -DskipTests clean package
+  artifacts:
+    name: "aonfine-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - target/*.war
+    expire_in: 14 days
+
+build_eap_image:
+  stage: image
+  resource_group: aonfine-image-build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  before_script:
+    - mkdir -p "$(dirname "$KUBECONFIG")"
+    - oc login "$OCP_API" --token="$OCP_TOKEN" --insecure-skip-tls-verify=true
+    - oc project "$OCP_NAMESPACE"
+  script:
+    - BUILD_CONTEXT="$(mktemp -d "$CI_PROJECT_DIR/.build-context.XXXXXX")"
+    - trap 'rm -rf "$BUILD_CONTEXT"' EXIT
+    - git archive --format=tar "$CI_COMMIT_SHA" | tar -xf - -C "$BUILD_CONTEXT"
+    - oc start-build aonfine-build-artifacts --from-dir="$BUILD_CONTEXT" --follow --wait
+    - oc start-build aonfine --follow --wait
+    - oc tag aonfine:latest "aonfine:$CI_COMMIT_SHORT_SHA"
+    - oc get istag "aonfine:$CI_COMMIT_SHORT_SHA"
+  after_script:
+    - rm -f "$KUBECONFIG"
+
+deploy_production:
+  stage: deploy
+  resource_group: aonfine-production
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: manual
+      allow_failure: false
+    - when: never
+  before_script:
+    - mkdir -p "$(dirname "$KUBECONFIG")"
+    - oc login "$OCP_API" --token="$OCP_TOKEN" --insecure-skip-tls-verify=true
+    - oc project "$OCP_NAMESPACE"
+  script:
+    - IMAGE_REF="$(oc get istag "aonfine:$CI_COMMIT_SHORT_SHA" -o jsonpath='{.image.dockerImageReference}')"
+    - test -n "$IMAGE_REF"
+    - oc set image dc/aonfine "aonfine=$IMAGE_REF"
+    - oc rollout latest dc/aonfine
+    - oc rollout status dc/aonfine --watch=true --timeout=10m
+    - ROUTE_HOST="$(oc get route aonfine -o jsonpath='{.spec.host}')"
+    - INGRESS_IP="$(getent ahostsv4 api.ocp.test.local | awk 'NR == 1 {print $1}')"
+    - test -n "$ROUTE_HOST" && test -n "$INGRESS_IP"
+    - MAIN_STATUS="$(curl -sk --resolve "${ROUTE_HOST}:443:${INGRESS_IP}" -o /dev/null -w '%{http_code}' "https://${ROUTE_HOST}/AonFine/main.do")"
+    - test "$MAIN_STATUS" = "200"
+    - DB_RESULT="$(curl -sk --resolve "${ROUTE_HOST}:443:${INGRESS_IP}" "https://${ROUTE_HOST}/AonFine/dbTest.do")"
+    - echo "$DB_RESULT"
+    - echo "$DB_RESULT" | grep -q 'select 1 = 1'
+  environment:
+    name: production
+    url: https://aonfine-aonfine.apps.ocp.test.local/AonFine/main.do
+  after_script:
+    - rm -f "$KUBECONFIG"

@@ -1,6 +1,9 @@
 target/
 bin/
 *.class
+.m2/
+.kube/
+.build-context.*/
 
 *.log
 *.tmp

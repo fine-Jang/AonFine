@@ -1,0 +1,5 @@
+*.sh text eol=lf
+.s2i/environment text eol=lf
+extensions/*.cli text eol=lf
+extensions/*.xml text eol=lf
+.gitlab-ci.yml text eol=lf
