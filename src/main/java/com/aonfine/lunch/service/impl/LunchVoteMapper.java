@@ -9,6 +9,8 @@ public interface LunchVoteMapper {
 
     List<LunchVoteVO> selectTodayBoardList();
 
+    List<LunchVoteVO> selectMonthlyVoteResultList(String startDate, String endDate);
+
     List<LunchVoteVO> selectCandidateList();
 
     LunchVoteVO selectTodayMyVote(String userId);
