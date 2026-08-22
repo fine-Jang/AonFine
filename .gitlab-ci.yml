@@ -62,8 +62,10 @@ deploy_production:
   resource_group: aonfine-production
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      when: on_success
+      when: manual
+      allow_failure: false
     - when: never
+  manual_confirmation: "운영 환경에 배포하시겠습니까?"
   before_script:
     - mkdir -p "$(dirname "$KUBECONFIG")"
     - oc login "$OCP_API" --token="$OCP_TOKEN" --insecure-skip-tls-verify=true
@@ -85,5 +87,6 @@ deploy_production:
   environment:
     name: production
     url: https://aonfine-aonfine.apps.ocp.test.local/AonFine/main.do
+    deployment_tier: production
   after_script:
     - rm -f "$KUBECONFIG"
