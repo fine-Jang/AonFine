@@ -9,8 +9,6 @@ public interface LunchVoteService {
 
     List<LunchVoteVO> selectTodayBoardList();
 
-    List<LunchVoteVO> selectMonthlyWinnerList(String month);
-
     LunchVoteVO selectTodayMyVote(String userId);
 
     LunchVoteVO vote(Integer restaurantId, UserVO loginUser);
