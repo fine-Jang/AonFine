@@ -1,5 +1,8 @@
 package com.aonfine.lunch.service.impl;
 
+import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -26,6 +29,31 @@ public class LunchVoteServiceImpl implements LunchVoteService {
 
     public List<LunchVoteVO> selectTodayBoardList() {
         return lunchVoteMapper.selectTodayBoardList();
+    }
+
+    public List<LunchVoteVO> selectMonthlyWinnerList(String month) {
+        if (month == null || month.trim().length() == 0) {
+            throw new IllegalArgumentException("조회할 월을 입력하세요.");
+        }
+        YearMonth selectedMonth;
+        try {
+            selectedMonth = YearMonth.parse(month);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("조회할 월 형식이 올바르지 않습니다.", e);
+        }
+
+        String startDate = selectedMonth.atDay(1).toString();
+        String endDate = selectedMonth.plusMonths(1).atDay(1).toString();
+        List<LunchVoteVO> results = lunchVoteMapper.selectMonthlyVoteResultList(startDate, endDate);
+        List<LunchVoteVO> winners = new ArrayList<LunchVoteVO>();
+        String winnerDate = null;
+        for (LunchVoteVO result : results) {
+            if (!result.getVoteDate().equals(winnerDate)) {
+                winners.add(result);
+                winnerDate = result.getVoteDate();
+            }
+        }
+        return winners;
     }
 
     public LunchVoteVO selectTodayMyVote(String userId) {
