@@ -47,21 +47,6 @@ public class LunchVoteJdbcMapper implements LunchVoteMapper {
         return jdbcTemplate.query(sql.toString(), new LunchVoteRowMapper(false));
     }
 
-    public List<LunchVoteVO> selectMonthlyVoteResultList(String startDate, String endDate) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT TO_CHAR(v.VOTE_DT, 'YYYY-MM-DD') AS VOTE_DT, ");
-        sql.append("r.RESTAURANT_ID, r.RESTAURANT_NM, r.STORE_NM, r.MENU_NM, r.ADDRESS, r.IMAGE_PATH, ");
-        sql.append("COUNT(v.VOTE_ID) AS VOTE_COUNT ");
-        sql.append("FROM TB_LUNCH_VOTE v ");
-        sql.append("INNER JOIN TB_RESTAURANT r ON v.RESTAURANT_ID = r.RESTAURANT_ID ");
-        sql.append("WHERE v.VOTE_DT >= TO_DATE(?, 'YYYY-MM-DD') ");
-        sql.append("AND v.VOTE_DT < TO_DATE(?, 'YYYY-MM-DD') ");
-        sql.append("GROUP BY v.VOTE_DT, r.RESTAURANT_ID, r.RESTAURANT_NM, r.STORE_NM, ");
-        sql.append("r.MENU_NM, r.ADDRESS, r.IMAGE_PATH ");
-        sql.append("ORDER BY v.VOTE_DT ASC, VOTE_COUNT DESC, r.STORE_NM ASC, r.RESTAURANT_ID ASC");
-        return jdbcTemplate.query(sql.toString(), new Object[] { startDate, endDate }, new MonthlyVoteRowMapper());
-    }
-
     public List<LunchVoteVO> selectCandidateList() {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT r.RESTAURANT_ID, r.RESTAURANT_NM, r.STORE_NM, r.MENU_NM, r.ADDRESS, r.IMAGE_PATH, ");
@@ -106,21 +91,6 @@ public class LunchVoteJdbcMapper implements LunchVoteMapper {
         sql.append("DELETE FROM TB_LUNCH_VOTE ");
         sql.append("WHERE VOTE_DT = CURRENT_DATE AND USER_ID = ?");
         return jdbcTemplate.update(sql.toString(), userId);
-    }
-
-    private static class MonthlyVoteRowMapper implements RowMapper<LunchVoteVO> {
-        public LunchVoteVO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            LunchVoteVO vo = new LunchVoteVO();
-            vo.setVoteDate(rs.getString("VOTE_DT"));
-            vo.setRestaurantId(Integer.valueOf(rs.getInt("RESTAURANT_ID")));
-            vo.setRestaurantName(rs.getString("RESTAURANT_NM"));
-            vo.setStoreName(rs.getString("STORE_NM"));
-            vo.setMenuName(rs.getString("MENU_NM"));
-            vo.setAddress(rs.getString("ADDRESS"));
-            vo.setImagePath(rs.getString("IMAGE_PATH"));
-            vo.setVoteCount(Integer.valueOf(rs.getInt("VOTE_COUNT")));
-            return vo;
-        }
     }
 
     private static class LunchVoteRowMapper implements RowMapper<LunchVoteVO> {

@@ -70,59 +70,6 @@
         </c:otherwise>
       </c:choose>
 
-      <div class="lunch-calendar-section">
-        <div class="lunch-calendar-header">
-          <a href="${pageContext.request.contextPath}/lunch/today.do?month=${previousMonth}"
-             class="lunch-calendar-nav" title="이전 달" aria-label="이전 달">
-            <i class="fa fa-chevron-left" aria-hidden="true"></i>
-          </a>
-          <h3><c:out value="${calendarMonthLabel}" /></h3>
-          <a href="${pageContext.request.contextPath}/lunch/today.do?month=${nextMonth}"
-             class="lunch-calendar-nav" title="다음 달" aria-label="다음 달">
-            <i class="fa fa-chevron-right" aria-hidden="true"></i>
-          </a>
-        </div>
-        <div class="lunch-calendar-scroll">
-          <div class="lunch-calendar-grid" role="grid" aria-label="점심 당선 메뉴 캘린더">
-            <div class="lunch-calendar-weekday is-sunday" role="columnheader">일</div>
-            <div class="lunch-calendar-weekday" role="columnheader">월</div>
-            <div class="lunch-calendar-weekday" role="columnheader">화</div>
-            <div class="lunch-calendar-weekday" role="columnheader">수</div>
-            <div class="lunch-calendar-weekday" role="columnheader">목</div>
-            <div class="lunch-calendar-weekday" role="columnheader">금</div>
-            <div class="lunch-calendar-weekday is-saturday" role="columnheader">토</div>
-            <c:forEach var="day" items="${calendarDays}">
-              <div class="lunch-calendar-day${day.currentMonth ? '' : ' is-muted'}${day.today ? ' is-today' : ''}"
-                   role="gridcell" aria-label="${day.date}">
-                <div class="lunch-calendar-date">
-                  <span><c:out value="${day.dayOfMonth}" /></span>
-                  <c:if test="${day.today}"><small>오늘</small></c:if>
-                </div>
-                <c:if test="${day.currentMonth and not empty day.winner}">
-                  <a class="lunch-calendar-winner"
-                     href="${pageContext.request.contextPath}/restaurant/detail.do?restaurantId=${day.winner.restaurantId}">
-                    <c:choose>
-                      <c:when test="${not empty day.winner.menuName}">
-                        <strong><c:out value="${day.winner.menuName}" /></strong>
-                        <span><c:out value="${day.winner.storeName}" /></span>
-                      </c:when>
-                      <c:otherwise>
-                        <strong><c:out value="${day.winner.storeName}" /></strong>
-                      </c:otherwise>
-                    </c:choose>
-                    <small><c:out value="${day.winner.voteCount}" />표</small>
-                  </a>
-                </c:if>
-              </div>
-            </c:forEach>
-          </div>
-        </div>
-      </div>
-
-      <div class="heading_container heading_center lunch-candidate-heading">
-        <h2>오늘의 후보</h2>
-      </div>
-
       <div class="filters-content">
         <div class="row grid">
           <c:forEach var="item" items="${todayVoteList}">

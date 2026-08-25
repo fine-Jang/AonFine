@@ -1,15 +1,5 @@
 package com.aonfine.lunch.web;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
@@ -23,7 +13,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.aonfine.auth.service.UserVO;
 import com.aonfine.auth.web.AuthController;
-import com.aonfine.lunch.service.LunchCalendarDayVO;
 import com.aonfine.lunch.service.LunchVoteService;
 import com.aonfine.lunch.service.LunchVoteVO;
 
@@ -36,18 +25,9 @@ public class LunchVoteController {
     private LunchVoteService lunchVoteService;
 
     @RequestMapping("/lunch/today.do")
-    public String today(@RequestParam(value = "month", required = false) String month,
-            HttpSession session,
-            Model model) {
+    public String today(HttpSession session, Model model) {
         UserVO loginUser = getLoginUser(session);
-        YearMonth selectedMonth = resolveMonth(month);
-        List<LunchVoteVO> monthlyWinners = lunchVoteService.selectMonthlyWinnerList(selectedMonth.toString());
-
         model.addAttribute("todayVoteList", lunchVoteService.selectTodayBoardList());
-        model.addAttribute("calendarDays", createCalendarDays(selectedMonth, monthlyWinners));
-        model.addAttribute("calendarMonthLabel", selectedMonth.getYear() + "년 " + selectedMonth.getMonthValue() + "월");
-        model.addAttribute("previousMonth", selectedMonth.minusMonths(1).toString());
-        model.addAttribute("nextMonth", selectedMonth.plusMonths(1).toString());
         if (loginUser != null) {
             model.addAttribute("myLunchVote", lunchVoteService.selectTodayMyVote(loginUser.getUserId()));
         }
@@ -104,43 +84,6 @@ public class LunchVoteController {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
         }
         return "redirect:" + safeReturnUrl(returnUrl, "/lunch/today.do");
-    }
-
-    private YearMonth resolveMonth(String month) {
-        if (month == null || month.trim().length() == 0) {
-            return YearMonth.now();
-        }
-        try {
-            return YearMonth.parse(month);
-        } catch (DateTimeParseException e) {
-            return YearMonth.now();
-        }
-    }
-
-    private List<LunchCalendarDayVO> createCalendarDays(YearMonth selectedMonth,
-            List<LunchVoteVO> monthlyWinners) {
-        Map<String, LunchVoteVO> winnerByDate = new HashMap<String, LunchVoteVO>();
-        for (LunchVoteVO winner : monthlyWinners) {
-            winnerByDate.put(winner.getVoteDate(), winner);
-        }
-
-        LocalDate today = LocalDate.now();
-        LocalDate gridStart = selectedMonth.atDay(1)
-                .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-        List<LunchCalendarDayVO> calendarDays = new ArrayList<LunchCalendarDayVO>(42);
-        for (int i = 0; i < 42; i++) {
-            LocalDate date = gridStart.plusDays(i);
-            LunchCalendarDayVO day = new LunchCalendarDayVO();
-            day.setDate(date.toString());
-            day.setDayOfMonth(date.getDayOfMonth());
-            day.setCurrentMonth(YearMonth.from(date).equals(selectedMonth));
-            day.setToday(date.equals(today));
-            if (day.isCurrentMonth()) {
-                day.setWinner(winnerByDate.get(day.getDate()));
-            }
-            calendarDays.add(day);
-        }
-        return calendarDays;
     }
 
     private UserVO getLoginUser(HttpSession session) {
