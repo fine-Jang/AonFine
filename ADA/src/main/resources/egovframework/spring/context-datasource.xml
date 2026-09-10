@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/jee https://www.springframework.org/schema/jee/spring-jee.xsd">
+
+    <!--
+      AonFine과 동일한 JBoss DataSource(JNDI)를 그대로 재사용한다. 비밀번호는 소스/설정에 두지 않고
+      JBoss standalone.xml의 DataSource 정의(AonFine 인수인계 문서 6절)에서만 관리된다.
+    -->
+    <jee:jndi-lookup id="dataSource"
+                     jndi-name="java:jboss/datasources/AonFineDS"
+                     resource-ref="false"
+                     expected-type="javax.sql.DataSource" />
+
+    <!--
+      JOB/ATTEMPT/DUMP 3-테이블 원자적 갱신(AnalysisService)에 필요한 실제 DB 트랜잭션.
+      tx:annotation-driven 선언은 @Transactional 빈들이 스캔되는 자식(dispatcher-servlet) 컨텍스트에 둔다.
+    -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+</beans>

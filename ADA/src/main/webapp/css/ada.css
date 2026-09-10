@@ -1,0 +1,428 @@
+/* ADA - DUMP analyze portal 공통 스타일 */
+:root {
+    --ada-teal: #2ec4c6;
+    --ada-navy: #16324a;
+    --ada-navy-dark: #0f2436;
+    --ada-sidebar: #1b2733;
+    --ada-sidebar-active: #24313f;
+    --ada-bg: #f2f4f7;
+    --ada-border: #e1e5ea;
+    --ada-text: #2c3440;
+    --ada-text-muted: #6b7684;
+    --ada-danger: #c62828;
+    --ada-warning: #b8860b;
+    --ada-success: #2e7d32;
+    --ada-gray: #757575;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", "Malgun Gothic", Arial, sans-serif;
+    color: var(--ada-text);
+    background: var(--ada-bg);
+}
+
+a { color: var(--ada-teal); text-decoration: none; }
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--ada-border);
+    background: #fff;
+    color: var(--ada-text);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.btn:hover:not(:disabled) { background: #f6f8fa; }
+
+.btn-primary {
+    background: var(--ada-teal);
+    border-color: var(--ada-teal);
+    color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) { background: #26adaf; }
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===================== 로그인 화면 ===================== */
+.ada-login-wrap {
+    display: flex;
+    min-height: 100vh;
+}
+
+.ada-login-left {
+    flex: 0 0 44%;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 60px;
+    background: #fff;
+}
+
+.ada-login-logo { width: 160px; margin-bottom: auto; }
+
+.ada-login-form-area {
+    max-width: 340px;
+    margin: auto 0;
+    width: 100%;
+}
+
+.ada-login-form-area h1 {
+    font-size: 22px;
+    color: var(--ada-navy);
+    margin-bottom: 24px;
+}
+
+.ada-login-form-area input[type="text"],
+.ada-login-form-area input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    border: 1px solid var(--ada-border);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.ada-login-form-area button {
+    width: 100%;
+    padding: 12px;
+    background: var(--ada-navy);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    margin-top: 8px;
+}
+
+.ada-login-form-area button:hover { background: var(--ada-navy-dark); }
+
+.ada-login-message {
+    background: #fdecea;
+    color: var(--ada-danger);
+    padding: 10px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.ada-login-right {
+    flex: 1 1 56%;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+.ada-login-right::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(15,36,54,0.75), rgba(15,36,54,0.35));
+}
+
+.ada-login-right-content {
+    position: relative;
+    z-index: 1;
+    text-align: left;
+    padding: 0 60px;
+}
+
+.ada-login-right-content h2 {
+    font-size: 48px;
+    margin: 0 0 12px;
+    letter-spacing: 2px;
+}
+
+.ada-login-right-content p {
+    font-size: 18px;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* ===================== 대시보드 레이아웃 (RHV 스타일 참고) ===================== */
+.ada-topbar {
+    height: 52px;
+    background: var(--ada-navy);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+}
+
+.ada-topbar img.ada-logo-sm { height: 26px; margin-right: 12px; }
+
+.ada-topbar .ada-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-right: auto;
+}
+
+.ada-topbar .ada-user {
+    font-size: 13px;
+    margin-right: 16px;
+    opacity: 0.9;
+}
+
+.ada-topbar a.ada-logout {
+    color: #fff;
+    font-size: 13px;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 3px;
+    padding: 5px 10px;
+}
+
+.ada-body {
+    display: flex;
+    min-height: calc(100vh - 52px);
+}
+
+.ada-sidebar {
+    width: 220px;
+    background: var(--ada-sidebar);
+    color: #cfd6dd;
+    flex-shrink: 0;
+    padding-top: 8px;
+}
+
+.ada-sidebar .ada-menu-item {
+    display: block;
+    padding: 12px 20px;
+    color: #cfd6dd;
+    font-size: 14px;
+    border-left: 3px solid transparent;
+}
+
+.ada-sidebar .ada-menu-item:hover,
+.ada-sidebar .ada-menu-item.active {
+    background: var(--ada-sidebar-active);
+    color: #fff;
+    border-left-color: var(--ada-teal);
+}
+
+.ada-content {
+    flex: 1;
+    padding: 20px 24px;
+    min-width: 0;
+}
+
+.ada-content h1 {
+    font-size: 18px;
+    margin: 0 0 16px;
+    color: var(--ada-navy);
+}
+
+.ada-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border: 1px solid var(--ada-border);
+    border-bottom: none;
+    padding: 10px 12px;
+    border-radius: 4px 4px 0 0;
+}
+
+.ada-toolbar .ada-toolbar-left,
+.ada-toolbar .ada-toolbar-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.ada-search input[type="text"] {
+    padding: 7px 10px;
+    border: 1px solid var(--ada-border);
+    border-radius: 4px;
+    font-size: 13px;
+    width: 220px;
+}
+
+.ada-table-wrap {
+    background: #fff;
+    border: 1px solid var(--ada-border);
+    border-radius: 0 0 4px 4px;
+    overflow-x: auto;
+}
+
+table.ada-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+table.ada-table th {
+    text-align: left;
+    background: #f7f9fb;
+    color: var(--ada-text-muted);
+    font-weight: 600;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--ada-border);
+    white-space: nowrap;
+}
+
+table.ada-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--ada-border);
+    white-space: nowrap;
+}
+
+table.ada-table tbody tr:hover { background: #f5fafa; cursor: pointer; }
+table.ada-table tbody tr.selected { background: #e6f7f7; }
+
+.ada-empty-row td {
+    text-align: center;
+    color: var(--ada-text-muted);
+    padding: 40px 0;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.status-UPLOADING .status-dot, .status-VALIDATING .status-dot { background: var(--ada-warning); }
+.status-STORED .status-dot { background: var(--ada-success); }
+.status-FAILED .status-dot { background: var(--ada-danger); }
+.status-EXPIRED .status-dot { background: var(--ada-gray); }
+
+.status-ANALYZING .status-dot { background: #1565c0; }
+.status-ANALYZED .status-dot { background: var(--ada-success); }
+.status-ANALYSIS_FAILED .status-dot { background: var(--ada-danger); }
+
+.status-QUEUED .status-dot { background: var(--ada-warning); }
+.status-RUNNING .status-dot { background: #1565c0; }
+.status-SUCCEEDED .status-dot { background: var(--ada-success); }
+.status-RECOVERY_REQUIRED .status-dot { background: #8e24aa; }
+
+.ada-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 14px 0;
+}
+
+.ada-pagination a, .ada-pagination span {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid var(--ada-border);
+    border-radius: 3px;
+    font-size: 12px;
+    color: var(--ada-text);
+}
+
+.ada-pagination .current { background: var(--ada-teal); color: #fff; border-color: var(--ada-teal); }
+
+/* ===================== 업로드 팝업 ===================== */
+.ada-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 24, 34, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.ada-modal-backdrop.open { display: flex; }
+
+.ada-modal {
+    background: #fff;
+    width: 460px;
+    max-width: 92vw;
+    border-radius: 6px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.ada-modal h2 {
+    margin: 0 0 16px;
+    font-size: 16px;
+    color: var(--ada-navy);
+}
+
+.ada-modal label {
+    display: block;
+    font-size: 12px;
+    color: var(--ada-text-muted);
+    margin: 10px 0 4px;
+}
+
+.ada-modal input[type="text"],
+.ada-modal input[type="file"],
+.ada-modal select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--ada-border);
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.ada-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.ada-progress-wrap { margin-top: 16px; display: none; }
+.ada-progress-wrap.show { display: block; }
+
+.ada-progress-bar-outer {
+    background: #eef1f4;
+    border-radius: 4px;
+    height: 10px;
+    overflow: hidden;
+}
+
+.ada-progress-bar-inner {
+    height: 100%;
+    width: 0%;
+    background: var(--ada-teal);
+    transition: width 0.2s ease;
+}
+
+.ada-progress-text {
+    font-size: 12px;
+    color: var(--ada-text-muted);
+    margin-top: 6px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.ada-upload-result {
+    margin-top: 12px;
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 4px;
+    display: none;
+}
+
+.ada-upload-result.show { display: block; }
+.ada-upload-result.success { background: #e8f5e9; color: var(--ada-success); }
+.ada-upload-result.error { background: #fdecea; color: var(--ada-danger); }
+
+.ada-help { color: #536274; font-size: 12px; white-space: normal; }
+.ada-fail-reason { color: #a72d2d; font-size: 12px; white-space: normal; overflow-wrap: anywhere; max-width: 360px; margin-top: 6px; }
+.status-CANCEL_REQUESTED .status-dot, .status-CLEANUP_PENDING .status-dot, .status-FINALIZING .status-dot { background: #b87510; }
+.status-CANCELLED .status-dot { background: #667788; }
+.status-CLEANUP_FAILED .status-dot { background: #c0392b; }
+.ada-toolbar-left, .ada-toolbar-right { flex-wrap: wrap; gap: 6px; }
+.ada-modal { max-height: 92vh; overflow-y: auto; }

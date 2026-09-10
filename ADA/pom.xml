@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+	<groupId>com.aonfine</groupId>
+	<artifactId>ADA</artifactId>
+	<packaging>war</packaging>
+	<version>1.0.0</version>
+	<name>ADA</name>
+	<url>http://www.egovframe.go.kr</url>
+
+	<!--
+	  독립 하위 프로젝트: AonFine 저장소 안에 있지만 별도 Maven 모듈이며 별도 WAR(ADA.war)로 빌드된다.
+	  AonFine의 pom.xml/src는 건드리지 않는다. AonFine과 같은 DB(JNDI AonFineDS)를 재사용하지만
+	  별도 WAR이라 클래스는 공유되지 않으므로 인증 호환 로직(SHA-256 해시, TB_USER 조회)은
+	  com.aonfine.auth.* 와 동일한 방식으로 이 모듈 안에 독립적으로 구현한다.
+	-->
+
+	<properties>
+	    <spring.maven.artifact.version>5.3.27</spring.maven.artifact.version>
+		<org.egovframe.rte.version>4.2.0</org.egovframe.rte.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<repositories>
+        <repository>
+            <id>mvn2s</id>
+            <url>https://repo1.maven.org/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+		<repository>
+			<id>egovframe</id>
+			<url>https://maven.egovframe.go.kr/maven/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+    </repositories>
+
+	<dependencies>
+        <!-- Explicit JSON serializer for upload/status responses; do not depend on a JBoss JSON-B provider. -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.18.10</version>
+        </dependency>
+		<!-- 표준프레임워크 실행환경 -->
+        <dependency>
+		    <groupId>org.egovframe.rte</groupId>
+		    <artifactId>org.egovframe.rte.ptl.mvc</artifactId>
+		    <version>${org.egovframe.rte.version}</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<artifactId>commons-logging</artifactId>
+		    		<groupId>commons-logging</groupId>
+		    	</exclusion>
+		    </exclusions>
+        </dependency>
+        <dependency>
+		    <groupId>org.egovframe.rte</groupId>
+		    <artifactId>org.egovframe.rte.psl.dataaccess</artifactId>
+		    <version>${org.egovframe.rte.version}</version>
+        </dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>jstl-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.taglibs</groupId>
+            <artifactId>taglibs-standard-impl</artifactId>
+            <version>1.2.5</version>
+        </dependency>
+
+		<!-- 대용량 스트리밍 업로드 파싱 (Servlet API를 통한 통짜 버퍼링 대신 진짜 스트리밍 사용) -->
+		<dependency>
+		    <groupId>commons-fileupload</groupId>
+		    <artifactId>commons-fileupload</artifactId>
+		    <version>1.5</version>
+		</dependency>
+
+		<!-- tar.gz 구조/손상 검증 (디스크에 풀지 않고 스트리밍으로 엔트리만 순회) -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.26.1</version>
+		</dependency>
+		<!-- commons-compress 1.26.1이 요구하는 commons-io API(IOUtils.skip(...,Supplier))를
+		     다른 전이 의존성의 구버전 commons-io가 가릴 수 있어 명시적으로 최신 버전을 고정한다. -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.15.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.36</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>2.20.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<scope>test</scope>
+		</dependency>
+        <!-- Local schema-preservation/constraint tests only; not a substitute for CUBRID integration QA. -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.maven.artifact.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.2.224</version>
+            <scope>test</scope>
+        </dependency>
+	</dependencies>
+
+	<build>
+		<finalName>ADA</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-war-plugin</artifactId>
+            	<version>3.3.2</version>
+            	<configuration>
+            		<failOnMissingWebXml>false</failOnMissingWebXml>
+            		<!--
+            		  JBoss EAP 7.4 배포 시 spring-modules-validation-0.9.jar의 META-INF/valang.tld가
+            		  Undertow PARSE 단계에서 오류를 일으킨 이력이 있어 (AonFine 인수인계 문서 8.2) WAR에서 제외한다.
+            		  egovframe.rte.ptl.mvc의 전이 의존성으로 들어올 수 있어 방어적으로 항상 제외한다.
+            		-->
+            		<packagingExcludes>WEB-INF/lib/spring-modules-validation-*.jar</packagingExcludes>
+            	</configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
